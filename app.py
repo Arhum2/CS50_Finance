@@ -50,20 +50,18 @@ def index():
     #stocks the user owns
     user = session['user_id']
     
-    for (int i = 0; i < symbol; i++)
-    
-        symbol = db.execute('SELECT symbol FROM buy WHERE username = ?', user)[0]['symbol']
-        result = lookup(symbol)
-        name = result['name']
-        price = db.execute('SELECT price FROM buy WHERE username = ?', user)[0]['price']
-        time = db.execute('SELECT time FROM buy')
-        #number of shares owned
-        shares = db.execute('SELECT shares FROM buy WHERE username = ?', user)[0]['shares']
-        #current price of each stock
-        current_price = result['price']
-        #value of each holding share*price
-        current_value = current_price * shares
-        #current cash balance
+    symbol = db.execute('SELECT symbol FROM buy WHERE username = ?', user)[0]['symbol']
+    result = lookup(symbol)
+    name = result['name']
+    price = db.execute('SELECT price FROM buy WHERE username = ?', user)[0]['price']
+    time = db.execute('SELECT time FROM buy')
+    #number of shares owned
+    shares = db.execute('SELECT shares FROM buy WHERE username = ?', user)[0]['shares']
+    #current price of each stock
+    current_price = result['price']
+    #value of each holding share*price
+    current_value = current_price * shares
+    #current cash balance
     
     current_cash = db.execute("SELECT cash FROM users")
     #grand total
