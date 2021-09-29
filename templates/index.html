@@ -5,30 +5,22 @@
 {% endblock %}
 
 {% block main %}
-    <table>
+    <table style='margin-top: 30px' class="table">
         <thead>
             <tr>
             {% for header in headings %}
                 <th>{{ header }}</th>
-                <th>{{ header }}</th>
-                <th>{{ header }}</th>
-                <th>{{ header }}</th>
-                <th>{{ header }}</th>
-                <th>{{ header }}</th>
             {% endfor %}
             </tr>
+        {% for shares in shares %}
             {% for row in data %}
-        </thead>
-        <tr>
-            {% for cell in row %}
-            <td>{{ cell }}</td>
-            <td>{{ cell }}</td>
-            <td>{{ cell }}</td>
-            <td>{{ cell }}</td>
-            <td>{{ cell }}</td>
-            <td>{{ cell }}</td>
+                <tbody>
+                    <tr>
+                        {% for cell in row %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
             {% endfor %}
-        </tr>
         {% endfor %}
-    </table>
 {% endblock %}
