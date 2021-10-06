@@ -49,6 +49,11 @@ def index():
 
     #stocks the user owns
     user = session['user_id']
+
+    #adds duplicate stocks together
+    db.execute('SELECT symbol, SUM(shares) as totalShares FROM buy WHERE username = :user_id GROUP BY symbol HAVING totalShares > 0;', user_id=session['user_id'])
+
+    
     symbol = db.execute('SELECT symbol FROM buy WHERE username = ?', user)[0]['symbol']
     result = lookup(symbol)
     name = result['name']
