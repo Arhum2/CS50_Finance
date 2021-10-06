@@ -12,15 +12,13 @@
                 <th>{{ header }}</th>
             {% endfor %}
             </tr>
-        {% for shares in shares %}
             {% for row in data %}
-                <tbody>
-                    <tr>
-                        {% for cell in row %}
-                            <td>{{ cell }}</td>
-                        {% endfor %}
-                    </tr>
-                </tbody>
+            </thead>
+                <tr>
+                    {% for cell in row %}
+                    <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
             {% endfor %}
-        {% endfor %}
+    </table>
 {% endblock %}

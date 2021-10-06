@@ -61,16 +61,15 @@ def index():
     #value of each holding share*price
     current_value = current_price * shares
     #current cash balance
-
     current_cash = db.execute("SELECT cash FROM users")
     #grand total
 
-    headings = ('Symbol', 'Company Name', 'Price', 'Time', 'Shares', 'Current price')
+    headings = ('Symbol', 'Company Name', 'Price', 'Current price', 'Shares', 'Time')
     data = (
-        (symbol, name, price, time, shares, current_price),
+        (symbol, name, price, current_price, shares, time),
 
         )
-
+    
 
     return render_template("index.html", data=data, headings=headings)
 
@@ -84,7 +83,7 @@ def buy():
 
     result = lookup(request.form.get('symbol'))
     if not result:
-        return render_template('buy.html', invalid=True, symbol= symbol)
+        return render_template('buy.html', invalid=True, symbol = symbol)
 
     username = session['user_id']
     symbol = request.form.get('symbol')
