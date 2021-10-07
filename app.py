@@ -48,35 +48,29 @@ def index():
     """Show portfolio of stocks"""
 
     #stocks the user owns
-    user = session['user_id']
+    user = session["user_id"]
 
     #adds duplicate stocks together
-    db.execute('SELECT symbol, SUM(shares) as totalShares FROM buy WHERE username = :user_id GROUP BY symbol HAVING totalShares > 0;', user_id=session['user_id'])
+    rows = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE username = :user_id GROUP BY symbol HAVING SUM(shares) > 0;', user_id=session['user_id'])
+    holdings = []
+    grand_total = 0
+    for row in rows:
+        stock = lookup(row['symbol'])
+        holdings.append({
+            "symbol": stock["symbol"],
+            "name": stock["name"],
+            "shares": row["SUM(shares)"],
+            "price": stock["price"], 
+            "total": usd(stock["price"] * row["SUM(shares)"]),
+            "time": db.execute("FROM buy SELECT time WHERE id = ?", user)
+            })
+        grand_total += stock["price"] * row["SUM(shares)"]
+    rows = db.execute("SELECT cash FROM users WHERE id = ?", user)
+    cash = rows[0]["cash"]
+    grand_total += cash
 
-    
-    symbol = db.execute('SELECT symbol FROM buy WHERE username = ?', user)[0]['symbol']
-    result = lookup(symbol)
-    name = result['name']
-    price = db.execute('SELECT price FROM buy WHERE username = ?', user)[0]['price']
-    time = db.execute('SELECT time FROM buy')[0]['time']
-    #number of shares owned
-    shares = db.execute('SELECT shares FROM buy WHERE username = ?', user)[0]['shares']
-    #current price of each stock
-    current_price = result['price']
-    #value of each holding share*price
-    current_value = current_price * shares
-    #current cash balance
-    current_cash = db.execute("SELECT cash FROM users")
-    #grand total
 
-    headings = ('Symbol', 'Company Name', 'Price', 'Current price', 'Shares', 'Time')
-    data = (
-        (symbol, name, price, current_price, shares, time),
-
-        )
-    
-
-    return render_template("index.html", data=data, headings=headings)
+    return render_template("index.html", holdings=holdings, cash=usd(cash), grand_total=usd(grand_total))
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -88,7 +82,7 @@ def buy():
 
     result = lookup(request.form.get('symbol'))
     if not result:
-        return render_template('buy.html', invalid=True, symbol = symbol)
+        return render_template('buy.html', invalid=True, symbol=symbol)
 
     username = session['user_id']
     symbol = request.form.get('symbol')

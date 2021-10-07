@@ -45,3 +45,11 @@ main img
     /* Constrain images on small screens */
     max-width: 100%;
 }
+
+main table {
+    text-align: left;
+}
+
+main tfoot {
+    font-weight: bold;
+}

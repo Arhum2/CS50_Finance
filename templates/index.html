@@ -7,18 +7,34 @@
 {% block main %}
     <table style='margin-top: 30px' class="table">
         <thead>
-            <tr>
-            {% for header in headings %}
-                <th>{{ header }}</th>
-            {% endfor %}
-            </tr>
-            {% for row in data %}
-            </thead>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Shares</th>
+            <th>Total</th>
+            <th>Time</th>
+        </thead>
+            <tfoot>
                 <tr>
-                    {% for cell in row %}
-                    <td>{{ cell }}</td>
-                    {% endfor %}
+                    <td colspan="4">Account Value</td>
+                    <td>{{grand_total}}</td>
                 </tr>
-            {% endfor %}
+            </tfoot>
+            <tbody>
+                {% for holding in holdings %}
+                    <tr>
+                        <td>{{holding["symbol"]}}</td>
+                        <td>{{holding["name"]}}</td>
+                        <td>{{holding["price"]}}</td>
+                        <td>{{holding["shares"]}}</td>
+                        <td>{{holding["total"]}}</td>
+                        <td>{{holding["time"]}}</td>
+                    </tr>
+                {% endfor %}
+                <tfoot>
+                    <td colspan=4>Account Balance</td>
+                    <td>{{cash}}</td>
+                </tfoot>
+            </tbody>
     </table>
 {% endblock %}
