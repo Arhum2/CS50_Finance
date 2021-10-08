@@ -49,7 +49,6 @@ def index():
 
     #stocks the user owns
     user = session["user_id"]
-
     #adds duplicate stocks together
     rows = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE username = :user_id GROUP BY symbol HAVING SUM(shares) > 0;', user_id=session['user_id'])
     holdings = []
@@ -61,14 +60,12 @@ def index():
             "name": stock["name"],
             "shares": row["SUM(shares)"],
             "price": stock["price"], 
-            "total": usd(stock["price"] * row["SUM(shares)"]),
-            "time": db.execute("FROM buy SELECT time WHERE id = ?", user)
+            "total": usd(stock["price"] * row["SUM(shares)"])
             })
         grand_total += stock["price"] * row["SUM(shares)"]
     rows = db.execute("SELECT cash FROM users WHERE id = ?", user)
     cash = rows[0]["cash"]
     grand_total += cash
-
 
     return render_template("index.html", holdings=holdings, cash=usd(cash), grand_total=usd(grand_total))
 
