@@ -6,7 +6,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime
+from datetime import datetime, time
 from helpers import apology, login_required, lookup, usd
 
 # Configure application
@@ -47,20 +47,21 @@ if not os.environ.get("API_KEY"):
 def index():
     """Show portfolio of stocks"""
 
-    #stocks the user owns
     user = session["user_id"]
     #adds duplicate stocks together
-    rows = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE username = :user_id GROUP BY symbol HAVING SUM(shares) > 0;', user_id=session['user_id'])
+    rows = db.execute('SELECT symbol, SUM(shares), time FROM buy WHERE username = :user_id GROUP BY symbol HAVING SUM(shares) > 0;', user_id=session['user_id'])
     holdings = []
     grand_total = 0
     for row in rows:
         stock = lookup(row['symbol'])
+        time = db.execute('SELECT time FROM buy WHERE id = ?', user)
         holdings.append({
             "symbol": stock["symbol"],
             "name": stock["name"],
             "shares": row["SUM(shares)"],
             "price": stock["price"], 
-            "total": usd(stock["price"] * row["SUM(shares)"])
+            "total": usd(stock["price"] * row["SUM(shares)"]),
+            "time": row["time"]
             })
         grand_total += stock["price"] * row["SUM(shares)"]
     rows = db.execute("SELECT cash FROM users WHERE id = ?", user)
