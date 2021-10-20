@@ -50,6 +50,7 @@ def index():
     user = session["user_id"]
     #adds duplicate stocks together
     rows = db.execute('SELECT symbol, SUM(shares), time FROM buy WHERE username = :user_id GROUP BY symbol HAVING SUM(shares) > 0;', user_id=session['user_id'])
+    global holdings
     holdings = []
     grand_total = 0
     for row in rows:
@@ -202,10 +203,12 @@ def sell():
     if request.method == 'POST':
 
         symbol = request.form.get('symbol')
-
         result = lookup(request.form.get('symbol'))
         if not result:
-            return render_template('buy.html', invalid=True, symbol=symbol)
+            return render_template('sell.html', invalid=True, symbol=symbol)
+
+        if int(request.form.get("shares")) >  holdings[request.form.get('symbol')]:
+            return apology('To many shares selected')
 
         username = session['user_id']
         shares = int(request.form.get('shares'))
@@ -213,19 +216,21 @@ def sell():
         price = result['price']
         name = result['name']
 
+        rows = db.execute("SELECT symbol, SUM(shares) as totalShares FROM transactions WHERE id = ? GROUP BY symbol HAVING totalshares > 0", username)
+        for row in rows:
+            if row["symbol"] == symbol:
+                if shares > row["totalShares"]:
+                    return apology("too many shares selected")
         cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
-        bill = cash + shares*price
-
-        if bill < 0:
-            return apology('Not enough cash')
+        bill = cash + shares*price         
 
         now = datetime.now()
 
         db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
         db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
 
-    else:
-        rows = db.execute("SELECT symbol FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0 ", username)
+    
+        rows = db.execute("SELECT symbol FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0;", username)
         return render_template("sell.html", symbols=[ row["symbol"] for row in rows])
 
 
