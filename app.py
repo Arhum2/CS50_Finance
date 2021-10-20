@@ -75,34 +75,32 @@ def index():
 @login_required
 def buy():
     """Buy shares of stock"""
-    if request.method == 'GET':
+    if request.method == 'POST':
+        symbol = request.form.get('symbol')
+        result = lookup(request.form.get('symbol'))
+        if not result:
+            return render_template('buy.html', invalid=True, symbol=symbol)
+
+        username = session['user_id']
+        shares = int(request.form.get('shares'))
+        result = lookup(symbol)
+        price = result['price']
+        name = result['name']
+
+        cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
+        bill = cash - shares*price
+
+        if bill < 0:
+            return apology('Not enough cash')
+
+        now = datetime.now()
+
+        db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
+        db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
+
+        return redirect("/")
+    else:
         return render_template('buy.html')
-
-    symbol = request.form.get('symbol')
-
-
-    result = lookup(request.form.get('symbol'))
-    if not result:
-        return render_template('buy.html', invalid=True, symbol=symbol)
-
-    username = session['user_id']
-    shares = int(request.form.get('shares'))
-    result = lookup(symbol)
-    price = result['price']
-    name = result['name']
-
-    cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
-    bill = cash - shares*price
-
-    if bill < 0:
-        return apology('Not enough cash')
-
-    now = datetime.now()
-
-    db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
-    db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
-
-    return redirect("/")
 
 
 @app.route("/history")
@@ -201,30 +199,30 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    if request.method == 'GET':
-        return render_template('buy.html')
+    if request.method == 'POST':
 
-    symbol = request.form.get('symbol')
+        symbol = request.form.get('symbol')
 
-    result = lookup(request.form.get('symbol'))
-    if not result:
-        return render_template('sell.html', invalid=True, symbol=symbol)
+        result = lookup(request.form.get('symbol'))
+        if not result:
+            return render_template('buy.html', invalid=True, symbol=symbol)
 
-    username = session['user_id']
-    shares = int(request.form.get('shares'))
-    result = lookup(symbol)
-    price = result['price']
-    name = result['name']
+        username = session['user_id']
+        shares = int(request.form.get('shares'))
+        result = lookup(symbol)
+        price = result['price']
+        name = result['name']
 
-    db.execute("SELECT SUM(shares) as totalShares FROM buy WHERE ")
+        cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
+        bill = cash + shares*price
 
-    cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
-    bill = cash + shares*price
+        if bill < 0:
+            return apology('Not enough cash')
 
-    now = datetime.now()
+        now = datetime.now()
 
-    db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
-    db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
+        db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
+        db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
 
     else:
         rows = db.execute("SELECT symbol FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0 ", username)
