@@ -78,12 +78,14 @@ def buy():
     if request.method == 'GET':
         return render_template('buy.html')
 
+    symbol = request.form.get('symbol')
+
+
     result = lookup(request.form.get('symbol'))
     if not result:
         return render_template('buy.html', invalid=True, symbol=symbol)
 
     username = session['user_id']
-    symbol = request.form.get('symbol')
     shares = int(request.form.get('shares'))
     result = lookup(symbol)
     price = result['price']
@@ -199,7 +201,17 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    if request.method =='GET':
+        return render_template('sell.html')
+
+    symbol = request.form.get('symbol')
+    result = lookup(request.form.get('symbol'))
+    
+    if not result:
+        return render_template('sell.html', invalid=True, symbol=symbol)
+
+
+    return render_template('sell.html')
 
 
 def errorhandler(e):

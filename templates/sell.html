@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Sell
+{% endblock %}
+
+{% block main %}
+    <form action="/sell" method='post'>
+        <div class="form-group" method='post'>
+            <input autocomplete="off" autofocus class="form-control" name="symbol" placeholder="Stock Symbol" type="text">
+            <input autocomplete="off" class="form-control" name="shares" placeholder="shares" type="number" min='1'>
+            <input class="btn btn-primary" type='submit' value='Sell'>
+        </div>
+        {% if invalid %}
+        <div class="alert alert-warning" role="alert" > The input symbol {{symbol}} is invalid </div>
+        {% endif %}
+    </form>
+
+{% endblock %}
