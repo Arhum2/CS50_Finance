@@ -220,16 +220,21 @@ def sell():
         for row in rows:
             if row["symbol"] == symbol:
                 if shares > row["totalShares"]:
-                    return apology("too many shares selected")
+                    flash("Too many shares were selected... try again")
+
         cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
         bill = cash + shares*price         
 
         now = datetime.now()
 
         db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
-        db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
-
+        db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, (shares == shares * -1), price, now)
+        
+        flash("Sold")
+        return redirect("/")
     
+    else:
+        username = session['user_id']
         rows = db.execute("SELECT symbol FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0;", username)
         return render_template("sell.html", symbols=[ row["symbol"] for row in rows])
 
