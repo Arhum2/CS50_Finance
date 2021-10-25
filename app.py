@@ -1,4 +1,5 @@
 import os
+from types import new_class
 
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
@@ -200,43 +201,47 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    if request.method == 'POST':
-
-        symbol = request.form.get('symbol')
-        result = lookup(request.form.get('symbol'))
-        if not result:
-            return render_template('sell.html', invalid=True, symbol=symbol)
-
-        if int(request.form.get("shares")) >  holdings[request.form.get('symbol')]:
-            return apology('To many shares selected')
+    if request.method == 'GET':
+        return render_template('sell.html')
+    
+    else:
 
         username = session['user_id']
         shares = int(request.form.get('shares'))
         result = lookup(symbol)
-        price = result['price']
         name = result['name']
+        symbol = request.form.get('symbol')
 
+        result = lookup(request.form.get('symbol'))
+        if not result:
+            return render_template('sell.html', invalid=True, symbol=symbol) #lookup and check for the correct symbol
+
+        if not shares:
+            return apology('No shares were selected')
         rows = db.execute("SELECT symbol, SUM(shares) as totalShares FROM transactions WHERE id = ? GROUP BY symbol HAVING totalshares > 0", username)
         for row in rows:
             if row["symbol"] == symbol:
                 if shares > row["totalShares"]:
-                    flash("Too many shares were selected... try again")
+                    flash("Too many shares were selected... try again") #checking for the correct amount of shares
 
         cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
-        bill = cash + shares*price         
+        current_price = result['price']
+        amount_owned =  + shares*current_price         
 
-        now = datetime.now()
-
-        db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
-        db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, (shares == shares * -1), price, now)
+        stocks_owned = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE id = ? GROUP BY smybol', username)
+        stocks_dict = {}
+        for row in stocks_owned:
+            stocks_dict[row['symbol']] = row['SUM(shares)']
         
-        flash("Sold")
-        return redirect("/")
-    
-    else:
-        username = session['user_id']
-        rows = db.execute("SELECT symbol FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0;", username)
-        return render_template("sell.html", symbols=[ row["symbol"] for row in rows])
+        shares_usable = stocks_dict[row['symbol']]
+
+        if int(shares) <= int(shares_usable):
+            bill = cash['cash'] + amount_owned
+            now = datetime.datetime.now()
+            db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
+            db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
+
+
 
 
 def errorhandler(e):
