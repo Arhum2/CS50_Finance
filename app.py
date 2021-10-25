@@ -95,8 +95,9 @@ def buy():
         if bill < 0:
             return apology('Not enough cash')
 
+        global now
         now = datetime.now()
-
+        
         db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
         db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
 
@@ -208,7 +209,7 @@ def sell():
 
         username = session['user_id']
         shares = int(request.form.get('shares'))
-        result = lookup(symbol)
+        result = lookup(request.form.get('symbol'))
         name = result['name']
         symbol = request.form.get('symbol')
 
@@ -218,7 +219,7 @@ def sell():
 
         if not shares:
             return apology('No shares were selected')
-        rows = db.execute("SELECT symbol, SUM(shares) as totalShares FROM transactions WHERE id = ? GROUP BY symbol HAVING totalshares > 0", username)
+        rows = db.execute("SELECT symbol, SUM(shares) as totalShares FROM buy WHERE id = ? GROUP BY symbol HAVING totalshares > 0", username)
         for row in rows:
             if row["symbol"] == symbol:
                 if shares > row["totalShares"]:
@@ -228,7 +229,7 @@ def sell():
         current_price = result['price']
         amount_owned =  + shares*current_price         
 
-        stocks_owned = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE id = ? GROUP BY smybol', username)
+        stocks_owned = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE id = ? GROUP BY symbol', username)
         stocks_dict = {}
         for row in stocks_owned:
             stocks_dict[row['symbol']] = row['SUM(shares)']
@@ -236,11 +237,12 @@ def sell():
         shares_usable = stocks_dict[row['symbol']]
 
         if int(shares) <= int(shares_usable):
-            bill = cash['cash'] + amount_owned
-            now = datetime.datetime.now()
+            bill = cash + amount_owned
             db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
             db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
-
+            return redirect('/')
+        else:
+            return render_template('apology.html', message='Error... try selecting fewer shares')
 
 
 
