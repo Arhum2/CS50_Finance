@@ -235,11 +235,14 @@ def sell():
             stocks_dict[row['symbol']] = row['SUM(shares)']
         
         shares_usable = stocks_dict[row['symbol']]
+        
+        global now
+        now = datetime.now()
 
         if int(shares) <= int(shares_usable):
             bill = cash + amount_owned
             db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
-            db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
+            db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares*-1, current_price, now)
             return redirect('/')
         else:
             return render_template('apology.html', message='Error... try selecting fewer shares')
