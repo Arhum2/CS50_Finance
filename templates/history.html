@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <table style='margin-top: 30px' class="table">
+        <thead>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Shares</th>
+            <th>Total</th>
+            <th>Time</th>
+        </thead>
+            <tfoot>
+                <tr>
+                    <td colspan="4">Account Value</td>
+                    <td>{{grand_total}}</td>
+                </tr>
+            </tfoot>
+            <tbody>
+                {% for holding in holdings %}
+                    <tr>
+                        <td>{{holding["symbol"]}}</td>
+                        <td>{{holding["name"]}}</td>
+                        <td>{{holding["price"]}}</td>
+                        <td>{{holding["shares"]}}</td>
+                        <td>{{holding["total"]}}</td>
+                        <td>{{holding["time"]}}</td>
+                    </tr>
+                {% endfor %}
+                <tfoot>
+                    <td colspan=4>Account Balance</td>
+                    <td>{{cash}}</td>
+                </tfoot>
+            </tbody>
+    </table>
+{% endblock %}

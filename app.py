@@ -110,7 +110,10 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    return render_template("history.html")
+
+
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -243,6 +246,7 @@ def sell():
             bill = cash + amount_owned
             db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
             db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares*-1, current_price, now)
+            flash("Sold!")
             return redirect('/')
         else:
             return render_template('apology.html', message='Error... try selecting fewer shares')
