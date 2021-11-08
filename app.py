@@ -101,6 +101,7 @@ def buy():
         db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
         db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
 
+        db.execute('INSERT into history (id, symbol, shares, price, time, Type, Company) VALUES (?, ?, ?, ?, ?, ?, ?)', username, symbol, shares, price, now, "Bought", name)
         return redirect("/")
     else:
         return render_template('buy.html')
@@ -199,6 +200,8 @@ def register():
 
     session['user_id'] = rows[0]['id']
 
+    db.execute('INSERT INTO history (username, id) VALUES (?, ?)', username, session['user_id'])
+
     return redirect('/')
 
 @app.route("/sell", methods=["GET", "POST"])
@@ -246,6 +249,7 @@ def sell():
             bill = cash + amount_owned
             db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
             db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares*-1, current_price, now)
+            db.execute('INSERT into history (symbol, shares, price, time, Type, Company) VALUES (?, ?, ?, ?, ?, ?)', symbol, shares*-1, current_price, now, "Sold", name)
             flash("Sold!")
             return redirect('/')
         else:
