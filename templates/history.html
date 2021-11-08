@@ -14,12 +14,6 @@
             <th>Total</th>
             <th>Time</th>
         </thead>
-            <tfoot>
-                <tr>
-                    <td colspan="4">Account Value</td>
-                    <td>{{grand_total}}</td>
-                </tr>
-            </tfoot>
             <tbody>
                 {% for holding in holdings %}
                     <tr>
@@ -31,10 +25,6 @@
                         <td>{{holding["time"]}}</td>
                     </tr>
                 {% endfor %}
-                <tfoot>
-                    <td colspan=4>Account Balance</td>
-                    <td>{{cash}}</td>
-                </tfoot>
             </tbody>
     </table>
 {% endblock %}

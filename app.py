@@ -101,7 +101,7 @@ def buy():
         db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
         db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
 
-        db.execute('INSERT into history (id, symbol, shares, price, time, Type, Company) VALUES (?, ?, ?, ?, ?, ?, ?)', username, symbol, shares, price, now, "Bought", name)
+        db.execute('INSERT into history (symbol, shares, price, time, Type, Company) VALUES (?, ?, ?, ?, ?, ?)', symbol, shares, price, now, "Bought", name)
         return redirect("/")
     else:
         return render_template('buy.html')
@@ -111,7 +111,10 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return render_template("history.html")
+
+    if request.method == "GET":
+
+        return render_template("history.html")
 
 
 
