@@ -101,7 +101,7 @@ def buy():
         db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
         db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares, price, now)
 
-        db.execute('INSERT into history (symbol, shares, price, time, Type, Company) VALUES (?, ?, ?, ?, ?, ?)', symbol, shares, price, now, "Bought", name)
+        db.execute('INSERT into history (symbol, shares, price, time, Type, Company, id) VALUES (?, ?, ?, ?, ?, ?, ?)', symbol, shares, price, now, "Bought", name, username)
         return redirect("/")
     else:
         return render_template('buy.html')
@@ -114,7 +114,9 @@ def history():
 
     if request.method == "GET":
 
-        return render_template("history.html")
+        username = session["user_id"]
+        data = db.execute("SELECT company, symbol, shares, price, time, type FROM history WHERE id = ?", username)
+        return render_template("history.html", data=data)
 
 
 
@@ -252,7 +254,7 @@ def sell():
             bill = cash + amount_owned
             db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
             db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares*-1, current_price, now)
-            db.execute('INSERT into history (symbol, shares, price, time, Type, Company) VALUES (?, ?, ?, ?, ?, ?)', symbol, shares*-1, current_price, now, "Sold", name)
+            db.execute('INSERT into history (symbol, shares, price, time, Type, Company, id) VALUES (?, ?, ?, ?, ?, ?, ?)', symbol, shares*-1, current_price, now, "Sold", name, username)
             flash("Sold!")
             return redirect('/')
         else:
