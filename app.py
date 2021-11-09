@@ -113,9 +113,10 @@ def history():
     """Show history of transactions"""
 
     if request.method == "GET":
-
-        username = session["user_id"]
-        data = db.execute("SELECT company, symbol, shares, price, time, type FROM history WHERE id = ?", username)
+        mysql = MySQL(app)
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM history")
+        data = cur.fetchall()
         return render_template("history.html", data=data)
 
 
