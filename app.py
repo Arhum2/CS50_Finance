@@ -37,6 +37,9 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
+conn = SQL("sqlite:///finance.db")
+
+
 
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
@@ -50,7 +53,7 @@ def index():
 
     user = session["user_id"]
     #adds duplicate stocks together
-    rows = db.execute('SELECT symbol, SUM(shares), time FROM buy WHERE username = :user_id GROUP BY symbol HAVING SUM(shares) > 0;', user_id=session['user_id'])
+    rows = db.execute('SELECT symbol, SUM(shares), time FROM buy WHERE username = ? GROUP BY symbol HAVING SUM(shares) > 0;', user)
     global holdings
     holdings = []
     grand_total = 0
@@ -111,17 +114,12 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    if request.method == ["GET, POST"]:
-        
-        con = sql.connect("database.db")
-        con.row_factory = sql.Row
-        
-        cur = con.cursor()
-        cur.execute("SELECT * FROM history")
-        
-        rows = cur.fetchall(); 
-        
-        return render_template("history.html", rows=rows)
+
+    user = session["user_id"]
+    rows = db.execute("SELECT Company, Symbol, Shares, Price, Time, Type From history Where id = ?", user) 
+    return render_template("history.html", rows=rows)
+    
+
 
 
 
@@ -210,7 +208,7 @@ def register():
 
     session['user_id'] = rows[0]['id']
 
-    db.execute('INSERT INTO history (username, id) VALUES (?, ?)', username, session['user_id'])
+    db.execute('INSERT INTO history WHERE id = ?', session['user_id'])
 
     return redirect('/')
 
