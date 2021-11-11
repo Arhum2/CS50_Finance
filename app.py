@@ -111,24 +111,17 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    if request.method == "GET":
-        user = session["user_id"]
-        #adds duplicate stocks together
-        rows = db.execute('SELECT symbol FROM history WHERE id = ?', user)
-        data = []
-        for row in rows:
-            stock = lookup(row["Symbol"])
-            time = db.execute('SELECT time FROM history WHERE id = ?', user)
-            holdings.append({
-                "symbol": stock["symbol"],
-                "Company": stock["name"],
-                "shares": db.execute("SELECT Shares from history where id = ?", user), 
-                "price": db.execute("SELECT Price from history where id = ?", user),
-                "time": db.execute("SELECT Time from history where id = ?", user),
-                "type": db.execute("SELECT Type from history where id = ?", user)
-                })
-
-        return render_template("history.html", holdings=holdings)
+    if request.method == ["GET, POST"]:
+        
+        con = sql.connect("database.db")
+        con.row_factory = sql.Row
+        
+        cur = con.cursor()
+        cur.execute("SELECT * FROM history")
+        
+        rows = cur.fetchall(); 
+        
+        return render_template("history.html", rows=rows)
 
 
 

@@ -15,14 +15,14 @@
             <th>Type</th>
         </thead>
             <tbody>
-                {% for holding in holdings %}
+                {% for row in rows %}
                     <tr>
-                        <td>{{holding["symbol"]}}</td>
-                        <td>{{holding["name"]}}</td>
-                        <td>{{holding["price"]}}</td>
-                        <td>{{holding["shares"]}}</td> 
-                        <td>{{holding["time"]}}</td>
-                        <td>{{holding["type"]}}</td>
+                        <td>{{row["Symbol"]}}</td>
+                        <td>{{row["Name"]}}</td>
+                        <td>{{row["Price"]}}</td>
+                        <td>{{row["Shares"]}}</td> 
+                        <td>{{row["Time"]}}</td>
+                        <td>{{row["Type"]}}</td>
                     </tr>
                 {% endfor %}
             </tbody>
