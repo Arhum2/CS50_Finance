@@ -208,8 +208,6 @@ def register():
 
     session['user_id'] = rows[0]['id']
 
-    db.execute('INSERT INTO history WHERE id = ?', session['user_id'])
-
     return redirect('/')
 
 @app.route("/sell", methods=["GET", "POST"])
@@ -233,11 +231,8 @@ def sell():
 
         if not shares:
             return apology('No shares were selected')
-        rows = db.execute("SELECT symbol, SUM(shares) as totalShares FROM buy WHERE id = ? GROUP BY symbol HAVING totalshares > 0", username)
-        for row in rows:
-            if row["symbol"] == symbol:
-                if shares > row["totalShares"]:
-                    flash("Too many shares were selected... try again") #checking for the correct amount of shares
+        
+        rows = db.execute("SELECT symbol, SUM(shares) FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0", username)
 
         cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
         current_price = result['price']
@@ -247,20 +242,21 @@ def sell():
         stocks_dict = {}
         for row in stocks_owned:
             stocks_dict[row['symbol']] = row['SUM(shares)']
-        
-        shares_usable = stocks_dict[row['symbol']]
-        
+
+        shares_usable = stocks_dict[symbol]
+
         global now
         now = datetime.now()
 
-        if int(shares) <= int(shares_usable):
+        if shares <= shares_usable:
             bill = cash + amount_owned
             db.execute('UPDATE users SET cash = ? WHERE id = ?', bill, username)
-            db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares*-1, current_price, now)
             db.execute('INSERT into history (symbol, shares, price, time, Type, Company, id) VALUES (?, ?, ?, ?, ?, ?, ?)', symbol, shares*-1, current_price, now, "Sold", name, username)
-            flash("Sold!")
+            db.execute('INSERT into buy (username, symbol, shares, price, time) VALUES (?, ?, ?, ?, ?)', username, symbol, shares*-1, current_price, now)
+            flash("Sold")
             return redirect('/')
         else:
+            flash("ERROR.... Too many shares selected")
             return render_template('apology.html', message='Error... try selecting fewer shares')
 
 
