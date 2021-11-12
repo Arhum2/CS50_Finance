@@ -218,25 +218,26 @@ def sell():
         return render_template('sell.html')
     
     else:
-
-        username = session['user_id']
+        
         shares = int(request.form.get('shares'))
-        result = lookup(request.form.get('symbol'))
-        name = result['name']
+        if not shares:
+            flash('No shares were selected')
+            return apology
+        
         symbol = request.form.get('symbol')
-
         result = lookup(request.form.get('symbol'))
         if not result:
             return render_template('sell.html', invalid=True, symbol=symbol) #lookup and check for the correct symbol
 
-        if not shares:
-            return apology('No shares were selected')
-        
+        username = session['user_id']
+        result = lookup(request.form.get('symbol'))
+        name = result['name']
+
         rows = db.execute("SELECT symbol, SUM(shares) FROM buy WHERE id = ? GROUP BY symbol HAVING SUM(shares) > 0", username)
 
         cash = db.execute('SELECT cash FROM users WHERE id = ?', username)[0]['cash']
         current_price = result['price']
-        amount_owned =  + shares*current_price         
+        amount_owned =+ shares*current_price         
 
         stocks_owned = db.execute('SELECT symbol, SUM(shares) FROM buy WHERE id = ? GROUP BY symbol', username)
         stocks_dict = {}
