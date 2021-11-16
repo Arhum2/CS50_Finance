@@ -14,7 +14,7 @@ the following pages I created are...
 
 Code outside of this was provided by CS50.
 
-![Capture](https://user-images.githubusercontent.com/82200170/141892674-0229cbe5-4a34-4024-90a5-050111ab9be8.JPG)
+![Capture](https://user-images.githubusercontent.com/82200170/141901981-e3de964c-a4c6-4cb8-ae7b-de62d5008901.JPG)
 1. User registers and logs in and the 'users' table updates in the database
 
 ![2](https://user-images.githubusercontent.com/82200170/141893313-7c33caf8-c595-421f-8fcf-7ac7cdf469a1.JPG)
