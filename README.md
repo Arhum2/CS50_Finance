@@ -17,10 +17,10 @@ Code outside of this was provided by CS50.
 ![Capture](https://user-images.githubusercontent.com/82200170/141901981-e3de964c-a4c6-4cb8-ae7b-de62d5008901.JPG)
 1. User registers and logs in and the 'users' table updates in the database
 
-![2](https://user-images.githubusercontent.com/82200170/141893313-7c33caf8-c595-421f-8fcf-7ac7cdf469a1.JPG)
+![2](https://user-images.githubusercontent.com/82200170/141902619-9d5496b3-364d-4520-94be-2a29d363c354.JPG)
 2. index page opens and displays the users’ holdings 
 
-![3](https://user-images.githubusercontent.com/82200170/141893740-3d75d4a3-d3d3-4aac-9a75-5879a00d299a.JPG)
+![3](https://user-images.githubusercontent.com/82200170/141902998-035ca9ff-a6fd-41cb-a9f6-5be164674441.JPG)
 3. Next the Quote page is used to determine the current price of a stock using Iex's cloud API
 
 ![4](https://user-images.githubusercontent.com/82200170/141894137-8973140b-1e40-476a-b586-feb95782905f.JPG)
