@@ -2,15 +2,19 @@
 
 *This project was done as a part of Harvard’s CS50 on EdX, more information and its requirements can be found [here](https://cs50.harvard.edu/x/2021/psets/9/finance/)*
 
-In this project I created a practice stock trading web app using Python, Flask, HTML, CSS, and SQLite 3 for my database
-the following pages I created are...
+In this project, I created a practice stock trading web app using Python, Flask, HTML, CSS, and SQLite 3 for my database the following pages I created are...
 
-1. Register - Allows users to register an account on the site. a username and password are submitted via Flask and a hash is generated to encrypt the password which is then stored in an SQLite 3 data base
-2. Quote - Allows users to lookup stock's and their price in real time using [iex's cloud API](https://iexcloud.io/)
+1. Register - This allows users to register an account on the site. a username and password are submitted via Flask and a hash is generated to encrypt the password which is then stored in an SQLite 3 database
+
+2. Allows users to look up stocks and their price in real-time using [iex's cloud API](https://iexcloud.io/)
+
 3. Buy - Allows users to enter a stock symbol and the number of shares they would like to purchase. 'buy' and 'history' tables are updated on stocks bought and cash spent
-4. Index - Displays the user’s stock portfolio such as stocks owned, cash, portfolio value, etc...
+
+4. Index - Displays the user’s stock portfolio such as stocks owned, cash, portfolio value, etc..
+
 5. Sell - Allows users to sell their stocks. 'buy' and 'history' tables are updated on stocks sold and cash gained
-6. History - Displays the 'history' table, showing all the users purchases and sales along with their price and time of sale/purchase
+
+6. History - Displays the 'history' table, showing all the user's purchases and sales along with their price and time of sale/purchase
 
 Code outside of this was provided by CS50.
 
